@@ -2,50 +2,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const levels = [
         {
             challenge: "Find an email from 'sender@example.com'.",
-            answers: ["from:sender@example.com"],
-            hint: "Use the 'from:' operator to specify the sender."
+            choices: [
+                "from:sender@example.com",
+                "to:sender@example.com",
+                "subject:sender@example.com",
+                "sender@example.com"
+            ],
+            answer: "from:sender@example.com"
         },
         {
             challenge: "Find files with the exact phrase 'Q4 Project Plan' in the title.",
-            answers: ['title:"Q4 Project Plan"'],
-            hint: "Use quotes for exact phrases and the 'title:' operator."
+            choices: [
+                'title:"Q4 Project Plan"',
+                "title:Q4 Project Plan",
+                'subject:"Q4 Project Plan"',
+                "file:Q4 Project Plan"
+            ],
+            answer: 'title:"Q4 Project Plan"'
         },
         {
             challenge: "Find a message that contains 'update' but NOT 'meeting'.",
-            answers: ["update -meeting"],
-            hint: "Use the minus sign (-) to exclude a word."
+            choices: [
+                "update -meeting",
+                "update NOT meeting",
+                "update !meeting",
+                "update and -meeting"
+            ],
+            answer: "update -meeting"
         },
         {
             challenge: "Find calendar events from 'organizer@example.com' about 'review' OR 'sync'.",
-            answers: [
+            choices: [
                 "from:organizer@example.com (review OR sync)",
-                "from:organizer@example.com (sync OR review)"
+                "from:organizer@example.com review OR sync",
+                "from:organizer@example.com (review AND sync)",
+                "from:organizer@example.com review,sync"
             ],
-            hint: "Use parentheses and the 'OR' keyword for multiple terms."
+            answer: "from:organizer@example.com (review OR sync)"
         },
         {
             challenge: "Find presentations about 'marketing strategy' created before 2023.",
-            answers: [
-                "marketing strategy before:2023-01-01 type:presentation",
-                "type:presentation marketing strategy before:2023-01-01"
+            choices: [
+                "type:presentation marketing strategy before:2023-01-01",
+                "type:presentation marketing strategy date<2023",
+                "doc marketing strategy before:2023",
+                "presentation AND marketing strategy"
             ],
-            hint: "Combine 'before:', a date, and 'type:'."
+            answer: "type:presentation marketing strategy before:2023-01-01"
         },
         {
             challenge: "Find documents that have a PDF file attached.",
-            answers: [
+            choices: [
                 "has:attachment filename:pdf",
-                "filename:pdf has:attachment"
+                "attachment:pdf",
+                "filetype:pdf",
+                "has:pdf"
             ],
-            hint: "Use 'has:attachment' and 'filename:'."
+            answer: "has:attachment filename:pdf"
         },
         {
             challenge: "Find unread emails sent to 'contact@example.com'.",
-            answers: [
+            choices: [
                 "to:contact@example.com is:unread",
-                "is:unread to:contact@example.com"
+                "to:contact@example.com unread",
+                "from:contact@example.com is:unread",
+                "is:unread AND contact@example.com"
             ],
-            hint: "Combine the 'to:' operator with 'is:unread'."
+            answer: "to:contact@example.com is:unread"
         }
     ];
 
@@ -56,9 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalLevelsEl = document.getElementById('total-levels');
     const scoreEl = document.getElementById('score');
     const challengeTextEl = document.getElementById('challenge-text');
-    const hintTextEl = document.getElementById('hint-text');
-    const answerInput = document.getElementById('answer-input');
-    const submitBtn = document.getElementById('submit-btn');
+    const choicesContainerEl = document.getElementById('choices-container');
     const feedbackTextEl = document.getElementById('feedback-text');
     const gameAreaEl = document.getElementById('game-area');
     const gameOverEl = document.getElementById('game-over');
@@ -71,31 +92,43 @@ document.addEventListener('DOMContentLoaded', () => {
             levelNumberEl.textContent = currentLevel + 1;
             totalLevelsEl.textContent = levels.length;
             challengeTextEl.textContent = level.challenge;
-            hintTextEl.textContent = "";
             feedbackTextEl.textContent = "";
-            answerInput.value = "";
-            answerInput.focus();
+            choicesContainerEl.innerHTML = ''; // Clear old choices
+
+            level.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.textContent = choice;
+                button.classList.add('choice-btn');
+                button.addEventListener('click', () => handleChoice(choice, button, level.answer));
+                choicesContainerEl.appendChild(button);
+            });
         } else {
             showGameOver();
         }
     }
 
-    function checkAnswer() {
-        const userAnswer = answerInput.value.trim().toLowerCase();
-        const correctAnswers = levels[currentLevel].answers.map(a => a.toLowerCase());
+    function handleChoice(selectedChoice, button, correctAnswer) {
+        const buttons = choicesContainerEl.querySelectorAll('.choice-btn');
+        buttons.forEach(btn => btn.disabled = true); // Disable all buttons
 
-        if (correctAnswers.includes(userAnswer)) {
+        if (selectedChoice === correctAnswer) {
             score += 10;
             scoreEl.textContent = score;
+            button.classList.add('correct');
             feedbackTextEl.textContent = "Correct! Great work, sleuth!";
-            feedbackTextEl.className = 'feedback-correct';
-            currentLevel++;
             setTimeout(loadLevel, 1500);
         } else {
-            feedbackTextEl.textContent = "Not quite. Check your syntax and try again!";
-            feedbackTextEl.className = 'feedback-incorrect';
-            hintTextEl.textContent = `Hint: ${levels[currentLevel].hint}`;
+            button.classList.add('incorrect');
+            feedbackTextEl.textContent = "Not quite. The correct answer is highlighted.";
+            // Highlight the correct answer
+            buttons.forEach(btn => {
+                if (btn.textContent === correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+            setTimeout(loadLevel, 2500); // Give more time to see the correct answer
         }
+        currentLevel++;
     }
 
     function showGameOver() {
@@ -113,12 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadLevel();
     }
 
-    submitBtn.addEventListener('click', checkAnswer);
-    answerInput.addEventListener('keyup', (event) => {
-        if (event.key === 'Enter') {
-            checkAnswer();
-        }
-    });
     restartBtn.addEventListener('click', restartGame);
 
     loadLevel();
