@@ -93,13 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
             totalLevelsEl.textContent = levels.length;
             challengeTextEl.textContent = level.challenge;
             feedbackTextEl.textContent = "";
-            choicesContainerEl.innerHTML = ''; // Clear old choices
+            choicesContainerEl.innerHTML = '';
 
             level.choices.forEach(choice => {
                 const button = document.createElement('button');
                 button.textContent = choice;
                 button.classList.add('choice-btn');
-                button.addEventListener('click', () => handleChoice(choice, button, level.answer));
+                button.addEventListener('click', () => handleChoice(choice, button, level));
                 choicesContainerEl.appendChild(button);
             });
         } else {
@@ -107,37 +107,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function handleChoice(selectedChoice, button, correctAnswer) {
-        const buttons = choicesContainerEl.querySelectorAll('.choice-btn');
-        buttons.forEach(btn => btn.disabled = true); // Disable all buttons to prevent multiple clicks
+    function handleChoice(selectedChoice, clickedButton, level) {
+        const allChoiceButtons = choicesContainerEl.querySelectorAll('.choice-btn');
+        allChoiceButtons.forEach(btn => btn.disabled = true);
 
-        if (selectedChoice === correctAnswer) {
+        let transitionDelay = 1500;
+
+        if (selectedChoice === level.answer) {
             score += 10;
             scoreEl.textContent = score;
-            button.classList.add('correct');
+            clickedButton.classList.add('correct');
             feedbackTextEl.textContent = "Correct! Great work, sleuth!";
-            
-            setTimeout(() => {
-                currentLevel++;
-                loadLevel();
-            }, 1500);
-
         } else {
-            button.classList.add('incorrect');
+            transitionDelay = 2500;
+            clickedButton.classList.add('incorrect');
             feedbackTextEl.textContent = "Not quite. The correct answer is highlighted.";
             
-            // Find the correct button and highlight it
-            buttons.forEach(btn => {
-                if (btn.textContent === correctAnswer) {
-                    btn.classList.add('correct');
-                }
-            });
-            
-            setTimeout(() => {
-                currentLevel++;
-                loadLevel();
-            }, 2500); // Wait longer so the user can see the correct answer
+            const correctButton = Array.from(allChoiceButtons).find(btn => btn.textContent === level.answer);
+            if (correctButton) {
+                correctButton.classList.add('correct');
+            }
         }
+
+        setTimeout(() => {
+            currentLevel++;
+            loadLevel();
+        }, transitionDelay);
     }
 
     function showGameOver() {
