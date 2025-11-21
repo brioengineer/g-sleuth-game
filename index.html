@@ -10,7 +10,7 @@
     <div class="game-container">
         <header>
             <h1>G-Sleuth 🕵️</h1>
-            <p>Your mission: Solve the challenges using Google Workspace search operators!</p>
+            <p>Your mission: Choose the correct search operator to solve the challenge!</p>
         </header>
 
         <div id="game-area">
@@ -20,12 +20,9 @@
             </div>
 
             <p id="challenge-text">Challenge description goes here.</p>
-            <p id="hint-text" class="hint"></p>
-
-            <div class="input-area">
-                <input type="text" id="answer-input" placeholder="Type your search query here..." autocomplete="off">
-                <button id="submit-btn">Submit</button>
-            </div>
+            
+            <!-- This is the new container for the choices -->
+            <div id="choices-container"></div>
 
             <p id="feedback-text"></p>
         </div>
@@ -33,7 +30,7 @@
         <div id="game-over" class="hidden">
             <h2>Game Over!</h2>
             <p>Your final score is <span id="final-score">0</span>.</p>
-            <button id="restart-btn">Play Again</button>e
+            <button id="restart-btn">Play Again</button>
         </div>
     </div>
 
