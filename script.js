@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // The levels array is now longer with new operators
     const levels = [
         {
             challenge: "Find an email from 'sender@example.com'.",
@@ -36,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
             choices: ["to:contact@example.com is:unread", "to:contact@example.com unread", "from:contact@example.com is:unread", "is:unread AND contact@example.com"],
             answer: "to:contact@example.com is:unread"
         },
-        // --- NEW LEVELS ---
         {
             challenge: "Find emails received AFTER January 1st, 2024.",
             choices: ["after:2024-01-01", "since:2024", "from:2024-01-01", "date>2024-01-01"],
@@ -73,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreEl = document.getElementById('final-score');
     const restartBtn = document.getElementById('restart-btn');
 
-    // --- NEW: Function to shuffle the levels array ---
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -114,14 +111,10 @@ document.addEventListener('DOMContentLoaded', () => {
             clickedButton.classList.add('correct');
             feedbackTextEl.textContent = "Correct! Great work, sleuth!";
         } else {
-            transitionDelay = 2500;
+            transitionDelay = 3000; // Increased delay to read the answer
             clickedButton.classList.add('incorrect');
-            feedbackTextEl.textContent = "Not quite. The correct answer is highlighted.";
-            
-            const correctButton = Array.from(allChoiceButtons).find(btn => btn.textContent === level.answer);
-            if (correctButton) {
-                correctButton.classList.add('correct');
-            }
+            // --- THIS IS THE NEW LOGIC ---
+            feedbackTextEl.innerHTML = `Not quite. The correct answer was: <br><strong>${level.answer}</strong>`;
         }
 
         setTimeout(() => {
@@ -140,14 +133,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentLevel = 0;
         score = 0;
         scoreEl.textContent = score;
-        shuffleArray(levels); // --- NEW: Shuffle the levels before starting ---
+        shuffleArray(levels);
         gameOverEl.classList.add('hidden');
         gameAreaEl.classList.remove('hidden');
         loadLevel();
     }
 
     restartBtn.addEventListener('click', startGame);
-
-    // Initial game start
     startGame();
 });
