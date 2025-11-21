@@ -7,6 +7,7 @@
     --text: #e0e0e0;
     --success: #00ff41;
     --error: #ff4151;
+    --disabled: #555;
 }
 
 body {
@@ -54,75 +55,63 @@ header p {
 
 #challenge-text {
     font-size: 1.2em;
-    margin-bottom: 1em;
+    margin-bottom: 1.5em;
     line-height: 1.5;
     text-align: left;
 }
 
-.hint {
-    font-style: italic;
-    color: #999;
-    min-height: 20px;
-    text-align: left;
-}
-
-.input-area {
+#choices-container {
     display: flex;
+    flex-direction: column;
+    gap: 0.75em;
     margin: 1.5em 0;
 }
 
-#answer-input {
-    flex-grow: 1;
+.choice-btn {
+    background-color: transparent;
+    border: 2px solid var(--foreground);
+    color: var(--foreground);
     padding: 0.8em;
+    width: 100%;
+    text-align: left;
     font-family: 'Inconsolata', monospace;
     font-size: 1.1em;
-    background-color: #1a1a1a;
-    color: var(--foreground);
-    border: 1px solid var(--foreground);
-    caret-color: var(--foreground);
-    animation: blink 1s step-end infinite;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
 }
 
-#answer-input:focus {
-    outline: none;
-    border-color: var(--accent);
-    animation: none; /* Stop blinking when focused */
-}
-
-@keyframes blink {
-    from, to { border-right-color: transparent }
-    50% { border-right-color: var(--foreground); }
-}
-
-#submit-btn {
+.choice-btn:not(:disabled):hover {
     background-color: var(--foreground);
     color: var(--background);
-    border: none;
-    padding: 0 1.5em;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 1em;
-    transition: background-color 0.3s, color 0.3s;
 }
 
-#submit-btn:hover {
-    background-color: var(--accent);
-    color: var(--text);
+.choice-btn.correct {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: var(--background);
+    font-weight: 700;
 }
+
+.choice-btn.incorrect {
+    background-color: var(--error);
+    border-color: var(--error);
+    color: var(--background);
+    font-weight: 700;
+}
+
+.choice-btn:disabled {
+    cursor: not-allowed;
+    color: var(--disabled);
+    border-color: var(--disabled);
+    background-color: #333;
+}
+
 
 #feedback-text {
     font-size: 1.1em;
     font-weight: 700;
     min-height: 30px;
     text-shadow: 0 0 3px;
-}
-
-.feedback-correct {
-    color: var(--success);
-}
-
-.feedback-incorrect {
-    color: var(--error);
 }
 
 .hidden {
